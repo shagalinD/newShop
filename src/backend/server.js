@@ -18,8 +18,10 @@ const PORT = 3000
 
 const server = http.createServer((req, res) => {
   const filePath = path.join(
-    __dirname,
-    req.url === '/' ? 'index.html' : req.url
+    __dirname, // Текущая директория
+    '..', // Перейти на уровень выше
+    'frontend', // Перейти в папку frontend
+    req.url === '/' ? 'index.html' : req.url // Выбрать файл
   )
   const extname = path.extname(filePath)
   const contentType = mimeTypes[extname] || 'text/plain'

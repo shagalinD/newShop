@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Список продуктов</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5">Список продуктов</h1>
+      <div class="mt-3">
+        <label for="categoryFilter">Фильтр по категории:</label>
+        <select id="categoryFilter" class="form-control">
+          <option value="">Все категории</option>
+          <option value="Электроника">Электроника</option>
+          <option value="Одежда">Одежда</option>
+          <option value="Мебель">Мебель</option>
+        </select>
+      </div>
+      <div id="product-container" class="row mt-4"></div>
+    </div>
+
+    <script>
+      // Функция для загрузки товаров
+      async function fetchProducts(category = '') {
+        const url = category
+          ? `http://localhost:8080/api/products/category/${encodeURIComponent(
+              category
+            )}`
+          : 'http://localhost:8080/api/products'
+        const response = await fetch(url)
+        const products = await response.json()
+        displayProducts(products)
+      }
+
+      // Функция для отображения товаров
+      function displayProducts(products) {
+        const container = document.getElementById('product-container')
+        container.innerHTML = ''
+
+        products.forEach((product) => {
+          const col = document.createElement('div')
+          col.className = 'col-md-4 mb-4'
+          col.innerHTML = `
+            <div class='card'>
+              <div class='card-body'>
+                <h5 class='card-title'>${product.title}</h5>
+                <h6 class='card-subtitle mb-2 text-muted'>
+                  Цена: ${product.price} руб.
+                </h6>
+                <p class='card-text'>${product.description}</p>
+                <p class='card-text'><strong>Категория:</strong> ${product.category}</p>
+              </div>
+            </div>
+          `
+          container.appendChild(col)
+        })
+      }
+
+      // Обработчик изменения фильтра
+      document
+        .getElementById('categoryFilter')
+        .addEventListener('change', (e) => {
+          fetchProducts(e.target.value)
+        })
+
+      // Загружаем товары при загрузке страницы
+      document.addEventListener('DOMContentLoaded', () => fetchProducts())
+    </script>
+  </body>
+</html>

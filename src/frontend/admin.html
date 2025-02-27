@@ -25,6 +25,14 @@
           <label for="description">Описание</label>
           <textarea class="form-control" id="description" required></textarea>
         </div>
+        <div class="form-group">
+          <label for="category">Категория</label>
+          <select class="form-control" id="category" required>
+            <option value="Электроника">Электроника</option>
+            <option value="Одежда">Одежда</option>
+            <option value="Мебель">Мебель</option>
+          </select>
+        </div>
         <button type="submit" class="btn btn-primary">Добавить товар</button>
       </form>
 
@@ -34,8 +42,13 @@
 
     <script>
       // Функция для загрузки товаров
-      async function loadProducts() {
-        const response = await fetch('http://localhost:8080/api/products')
+      async function loadProducts(category = '') {
+        const url = category
+          ? `http://localhost:8080/api/products/category/${encodeURIComponent(
+              category
+            )}`
+          : 'http://localhost:8080/api/products'
+        const response = await fetch(url)
         const products = await response.json()
         const productList = document.getElementById('productList')
         productList.innerHTML = ''
@@ -48,6 +61,7 @@
               <h5 class="card-title">${product.title}</h5>
               <h6 class="card-subtitle mb-2 text-muted">Цена: ${product.price} руб.</h6>
               <p class="card-text">${product.description}</p>
+              <p class="card-text"><strong>Категория:</strong> ${product.category}</p>
               <button onclick="editProduct(${product.id})" class="btn btn-warning">Редактировать</button>
               <button onclick="deleteProduct(${product.id})" class="btn btn-danger">Удалить</button>
             </div>
@@ -64,11 +78,12 @@
           const title = document.getElementById('title').value
           const price = document.getElementById('price').value
           const description = document.getElementById('description').value
+          const category = document.getElementById('category').value
 
           const response = await fetch('http://localhost:8080/api/products', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, price, description }),
+            body: JSON.stringify({ title, price, description, category }),
           })
 
           if (response.ok) {
@@ -96,13 +111,14 @@
         const title = prompt('Введите новое название:')
         const price = prompt('Введите новую цену:')
         const description = prompt('Введите новое описание:')
+        const category = prompt('Введите новую категорию:')
 
         const response = await fetch(
           `http://localhost:8080/api/products/${id}`,
           {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, price, description }),
+            body: JSON.stringify({ title, price, description, category }),
           }
         )
 

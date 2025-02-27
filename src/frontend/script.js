@@ -17,7 +17,7 @@ async function fetchProducts() {
 
 function displayProducts(products) {
   const container = document.getElementById('product-container')
-  container.innerHTML = '' // Очищаем контейнер перед добавлением новых карточек
+  container.innerHTML = ''
 
   products.forEach((product) => {
     const col = document.createElement('div')
@@ -35,5 +35,4 @@ function displayProducts(products) {
   })
 }
 
-// Вызов функции для получения и отображения продуктов при загрузке страницы
 document.addEventListener('DOMContentLoaded', fetchProducts)

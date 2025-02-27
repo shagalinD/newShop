@@ -10,14 +10,25 @@ let products = [
     title: 'Продукт 1',
     price: '5000',
     description: 'Описание продукта 1',
+    category: 'Электроника',
   },
   {
     id: 2,
     title: 'Продукт 2',
     price: '3000',
     description: 'Описание продукта 2',
+    category: 'Одежда',
+  },
+  {
+    id: 3,
+    title: 'Продукт 3',
+    price: '2000',
+    description: 'Описание продукта 3',
+    category: 'Электроника',
   },
 ]
+
+const categories = ['Электроника', 'Одежда', 'Мебель']
 
 const server = http.createServer((req, res) => {
   // Разрешаем CORS
@@ -36,8 +47,8 @@ const server = http.createServer((req, res) => {
   }
 
   // Возвращаем HTML-страницу для /admin
-  if (req.url === '/admin' && req.method === 'GET') {
-    const filePath = path.join(__dirname, 'admin.html')
+  if (req.url === '/' && req.method === 'GET') {
+    const filePath = path.join(__dirname, '..', 'frontend', 'admin.html')
     fs.readFile(filePath, (err, data) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'text/plain' })
@@ -50,10 +61,28 @@ const server = http.createServer((req, res) => {
     return
   }
 
+  // API для получения списка категорий
+  if (req.url === '/api/categories' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify(categories))
+    return
+  }
+
   // API для получения списка товаров
   if (req.url === '/api/products' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify(products))
+    return
+  }
+
+  // API для получения товаров по категории
+  if (req.url.startsWith('/api/products/category/') && req.method === 'GET') {
+    const category = decodeURIComponent(req.url.split('/')[4])
+    const filteredProducts = products.filter(
+      (product) => product.category === category
+    )
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify(filteredProducts))
     return
   }
 
